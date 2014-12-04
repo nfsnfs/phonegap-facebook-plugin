@@ -32,6 +32,7 @@ import com.facebook.FacebookOperationCanceledException;
 import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookRequestError;
 import com.facebook.FacebookServiceException;
+import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Request.GraphUserCallback;
 import com.facebook.Response;
@@ -467,7 +468,10 @@ public class ConnectPlugin extends CordovaPlugin {
 
             graphPath = args.getString(0);
 
-            JSONArray arr = args.getJSONArray(1);
+            /* add feature: providing POST method for Graph API call */
+            String httpMethod = args.getString(1);
+
+            JSONArray arr = args.getJSONArray(2);
 
             final List<String> permissionsList = new ArrayList<String>();
             for (int i = 0; i < arr.length(); i++) {
@@ -585,7 +589,7 @@ public class ConnectPlugin extends CordovaPlugin {
         }
     }
 
-    private void makeGraphCall() {
+    private void makeGraphCall(String httpMethod) {
         Session session = Session.getActiveSession();
 
         Request.Callback graphCallback = new Request.Callback() {
@@ -614,9 +618,30 @@ public class ConnectPlugin extends CordovaPlugin {
 
         String[] urlParts = graphPath.split("\\?");
         String graphAction = urlParts[0];
-        Request graphRequest = Request.newGraphPathRequest(null, graphAction, graphCallback);
-        Bundle params = graphRequest.getParameters();
 
+        /* give a way to send POST Graph API call */
+        Request graphRequest;
+        Bundle params;
+
+        if (httpMethod.equalsIgnoreCase("post")) {
+            params = new Bundle();
+
+            parseParamsToBundle(params, urlParts);
+
+            graphRequest = new Request(null, graphPath, params, HttpMethod.POST, graphCallback);
+
+        } else if (httpMethod.equalsIgnoreCase("get")) {
+            graphRequest = Request.newGraphPathRequest(null, graphAction, graphCallback);
+            params = graphRequest.getParameters();
+
+            parseParamsToBundle(params, urlParts);
+        } 
+
+        graphRequest.setParameters(params);
+        graphRequest.executeAsync();
+    }
+
+    void parseParamsToBundle(Bundle params, String urlPart) {
         if (urlParts.length > 1) {
             String[] queries = urlParts[1].split("&");
 
@@ -629,10 +654,7 @@ public class ConnectPlugin extends CordovaPlugin {
                 }
             }
         }
-        params.putString("access_token", session.getAccessToken());
-
-        graphRequest.setParameters(params);
-        graphRequest.executeAsync();
+        params.putString("access_token", session.getAccessToken()); 
     }
 
     /*
