@@ -112,7 +112,7 @@ Failure function returns an error String.
 
 Allows access to the Facebook Graph API. This API allows for additional permission because, unlike login, the Graph API can accept multiple permissions.
 
-** Note: Only for Android. iOS would treat all as GET. **
+**Note** Only for Android. iOS would treat all as GET.
 Example method:
     "post"
     "get"
