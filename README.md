@@ -108,9 +108,14 @@ Failure function returns an error String.
 
 ### The Graph API
 
-`facebookConnectPlugin.api(String requestPath, Array permissions, Function success, Function failure)`
+`facebookConnectPlugin.api(String requestPath, String method, Array permissions, Function success, Function failure)`
 
 Allows access to the Facebook Graph API. This API allows for additional permission because, unlike login, the Graph API can accept multiple permissions.
+
+** Note: Only for Android. iOS would treat all as GET. **
+Example method:
+    "post"
+    "get"
 
 Example permissions:
 
