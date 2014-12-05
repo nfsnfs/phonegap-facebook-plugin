@@ -497,7 +497,7 @@ public class ConnectPlugin extends CordovaPlugin {
                 } else {
                     Session session = Session.getActiveSession();
                     if (session.getPermissions().containsAll(permissionsList)) {
-                        makeGraphCall();
+                        makeGraphCall(httpMethod);
                     } else {
                         // Set up the new permissions request
                         Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(cordova.getActivity(), permissionsList);
@@ -514,7 +514,7 @@ public class ConnectPlugin extends CordovaPlugin {
                     }
                 }
             } else {
-                makeGraphCall();
+                makeGraphCall(httpMethod);
             }
             return true;
         }
@@ -695,7 +695,7 @@ public class ConnectPlugin extends CordovaPlugin {
                     });
                 } else if (graphContext != null) {
                     // Make the graph call
-                    makeGraphCall();
+                    makeGraphCall("get");
                 }
             } else if (state == SessionState.CLOSED_LOGIN_FAILED && loginContext != null){
                 handleError(new FacebookAuthorizationException("Session was closed and was not closed normally"), loginContext);
