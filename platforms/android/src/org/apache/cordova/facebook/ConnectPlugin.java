@@ -626,7 +626,7 @@ public class ConnectPlugin extends CordovaPlugin {
         if (httpMethod.equalsIgnoreCase("post")) {
             params = new Bundle();
 
-            parseParamsToBundle(params, urlParts);
+            parseParamsToBundle(params, urlParts, session);
 
             graphRequest = new Request(null, graphPath, params, HttpMethod.POST, graphCallback);
 
@@ -634,14 +634,19 @@ public class ConnectPlugin extends CordovaPlugin {
             graphRequest = Request.newGraphPathRequest(null, graphAction, graphCallback);
             params = graphRequest.getParameters();
 
-            parseParamsToBundle(params, urlParts);
-        } 
+            parseParamsToBundle(params, urlParts, session);
+        }  else {
+            graphRequest = Request.newGraphPathRequest(null, graphAction, graphCallback);
+            params = graphRequest.getParameters();
+
+            parseParamsToBundle(params, urlParts, session);
+        }
 
         graphRequest.setParameters(params);
         graphRequest.executeAsync();
     }
 
-    void parseParamsToBundle(Bundle params, String urlPart) {
+    void parseParamsToBundle(Bundle params, String[] urlParts, Session session) {
         if (urlParts.length > 1) {
             String[] queries = urlParts[1].split("&");
 
